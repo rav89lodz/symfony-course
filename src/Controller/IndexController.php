@@ -53,11 +53,19 @@ class IndexController extends AbstractController
             }
         }
 
-        $numbers = ["1" => 1, "2" => 2, "3" => 3, "4" => 4];
         return $this->render('index/index.html.twig', [
             'controller_name' => 'IndexController',
-            'numbers' => $numbers,
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/test', name: 'test')]
+    public function test(): Response
+    {
+        $numbers = ["1" => 1, "2" => 2, "3" => 3, "4" => 4];
+        return $this->render('index/test.html.twig', [
+            'controller_name' => 'IndexController',
+            'numbers' => $numbers
         ]);
     }
 }
