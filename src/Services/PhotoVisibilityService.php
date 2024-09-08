@@ -21,18 +21,20 @@ class PhotoVisibilityService
             $photo->setIsPublic($visibility);
             $this->entityManager->persist($photo);
             $this->entityManager->flush();
+
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     private function isPhotoBelongToCurrentUser(Photo $photo)
     {
         if ($photo->getUser() === $this->security->getUser()) {
+            
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 }
