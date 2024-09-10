@@ -4,11 +4,16 @@ namespace App\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
 
-class LoginErrorEvent extends Event
+final class LoginErrorEvent extends Event
 {
     const NAME = 'login.error';
 
-    public function __construct(public readonly string $user)
+    public function __construct(private string $user)
     {
+    }
+
+    public function getUser(): string
+    {
+        return $this->user;
     }
 }
