@@ -2,10 +2,9 @@
 
 namespace App\Controller;
 
-use App\Event\LoginErrorEvent;
-use App\EventSubscriber\EventErrorSubscriber;
+use App\Event\UserLoginFailedEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
@@ -13,7 +12,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 class SecurityController extends AbstractController
 {
     #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils): Response
+    public function login(AuthenticationUtils $authenticationUtils, EventDispatcherInterface $eventDispatcher): Response
     {
         if ($this->getUser()) {
             return $this->redirectToRoute('app_index');
@@ -24,12 +23,10 @@ class SecurityController extends AbstractController
         
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-
-        $eventDispatcher = new EventDispatcher;
-        $event = new LoginErrorEvent($lastUsername);
-        $eventDispatcher->addSubscriber(new EventErrorSubscriber());
-        $eventDispatcher->dispatch($event, $event::NAME);
-        
+        if ($error !== null) {
+            $event = new UserLoginFailedEvent($lastUsername);
+            $eventDispatcher->dispatch($event, UserLoginFailedEvent::NAME);
+        }
 
         return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
     }
